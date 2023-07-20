@@ -2,13 +2,14 @@ use std::{
     collections::HashMap,
     env::current_dir,
     fs,
-    path::{Path, PathBuf},
+    path::PathBuf
 };
 
 use circom::circuit::{CircomCircuit, R1CS};
 use nova_snark::{
     traits::{circuit::TrivialTestCircuit, Group},
     PublicParams, RecursiveSNARK,
+    provider::secp_secq
 };
 use num_bigint::BigInt;
 use num_traits::Num;
@@ -25,11 +26,11 @@ use crate::circom::wasm::generate_witness_from_wasm;
 
 pub mod circom;
 
-pub type G1 = pasta_curves::pallas::Point;
+pub type G1 = secp_secq::secp256k1::Point;
 pub type F1 = <G1 as Group>::Scalar;
 pub type EE1 = nova_snark::provider::ipa_pc::EvaluationEngine<G1>;
 pub type S1 = nova_snark::spartan::RelaxedR1CSSNARK<G1, EE1>;
-pub type G2 = pasta_curves::vesta::Point;
+pub type G2 = secp_secq::secq256k1::Point;
 pub type F2 = <G2 as Group>::Scalar;
 pub type EE2 = nova_snark::provider::ipa_pc::EvaluationEngine<G2>;
 pub type S2 = nova_snark::spartan::RelaxedR1CSSNARK<G2, EE2>;
