@@ -11,8 +11,8 @@ use std::{
     io::{Error, ErrorKind, Read, Result, Seek, SeekFrom},
 };
 
-type G1 = secp_secq::secp256k1::Point;
-type G2 = secp_secq::secq256k1::Point;
+type G1 = secp_secq::secq256k1::Point;
+type G2 = secp_secq::secp256k1::Point;
 
 // R1CSFile's header
 #[derive(Debug, Default)]

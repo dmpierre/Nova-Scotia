@@ -9,6 +9,7 @@
 #define Fr_SHORT 0x00000000
 #define Fr_LONG 0x80000000
 #define Fr_LONGMONTGOMERY 0xC0000000
+typedef unsigned int uint;
 typedef uint64_t FrRawElement[Fr_N64];
 typedef struct __attribute__((__packed__)) {
     int32_t shortVal;

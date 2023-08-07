@@ -63,24 +63,12 @@ impl<'a, Fr: PrimeField> CircomCircuit<Fr> {
         cs: &mut CS,
         z: &[AllocatedNum<Fr>],
     ) -> Result<Vec<AllocatedNum<Fr>>, SynthesisError> {
-        // println!("witness: {:?}", self.witness);
-        // // println!("wire_mapping: {:?}", self.wire_mapping);
-        // // println!("aux_offset: {:?}", self.aux_offset);
-        // println!("num_inputs: {:?}", self.r1cs.num_inputs);
-        // println!("num_aux: {:?}", self.r1cs.num_aux);
-        // println!("num_variables: {:?}", self.r1cs.num_variables);
-        // println!("constraints: {:?}", self.r1cs.constraints);
-        // println!(
-        //     "z: {:?}",
-        //     z.into_iter().map(|x| x.get_value()).collect::<Vec<_>>()
-        // );
 
         let witness = &self.witness;
 
         let mut vars: Vec<AllocatedNum<Fr>> = vec![];
         let mut z_out: Vec<AllocatedNum<Fr>> = vec![];
         let pub_output_count = (self.r1cs.num_inputs - 1) / 2;
-
         for i in 1..self.r1cs.num_inputs {
             // Public inputs do not exist, so we alloc, and later enforce equality from z values
             let f: Fr = {
@@ -132,7 +120,9 @@ impl<'a, Fr: PrimeField> CircomCircuit<Fr> {
             );
         }
 
+
         for i in (pub_output_count + 1)..self.r1cs.num_inputs {
+
             cs.enforce(
                 || format!("pub input enforce {}", i),
                 |lc| lc + z[i - 1 - pub_output_count].get_variable(),

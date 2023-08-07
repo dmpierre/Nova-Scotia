@@ -21,7 +21,7 @@ fn main() {
         private_input.insert("adder".to_string(), json!(i));
         private_inputs.push(private_input);
     }
-
+    println!("{:?}", private_inputs);
     let start_public_input = vec![F1::from(10), F1::from(10)];
 
     let pp = create_public_params(r1cs.clone());

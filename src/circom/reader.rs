@@ -1,6 +1,12 @@
+use crate::circom::circuit::{CircuitJson, R1CS};
+use crate::circom::file::{from_reader, read_field};
+use crate::FileLocation;
 use anyhow::bail;
 use byteorder::{LittleEndian, ReadBytesExt};
+use ff::PrimeField;
 use itertools::Itertools;
+use nova_snark::provider::secp_secq;
+use nova_snark::traits::Group;
 use std::collections::BTreeMap;
 use std::env::current_dir;
 use std::fs;
@@ -9,13 +15,7 @@ use std::io::{BufReader, Read, Seek};
 use std::path::Path;
 use std::process::Command;
 use std::str;
-use nova_snark::provider::secp_secq;
-use crate::circom::circuit::{CircuitJson, R1CS};
-use crate::circom::file::{from_reader, read_field};
-use crate::FileLocation;
-use ff::PrimeField;
-use nova_snark::traits::Group;
-type G1 = secp_secq::secp256k1::Point;
+type G1 = secp_secq::secq256k1::Point;
 
 pub fn generate_witness_from_bin<Fr: PrimeField>(
     witness_bin: &Path,

@@ -1,5 +1,10 @@
 cd examples/bitcoin/circom
-ghead -n -1 bitcoin.circom > bitcoin_benchmark.circom
+rm bitcoin_benchmark.circom
+head -n -1 bitcoin.circom > bitcoin_benchmark.circom
+echo include \"./bitcoin.circom\"\; >> bitcoin_benchmark.circom
 echo "component main { public [step_in] } = Main($1);" >> bitcoin_benchmark.circom
-circom bitcoin_benchmark.circom --r1cs --sym --c --prime vesta
-cd bitcoin_benchmark_cpp && make
+
+# error: "ld: symbol(s) not found for architecture arm64" when using M2
+# compile to wasm instead
+
+circom bitcoin_benchmark.circom --r1cs --sym --wasm --prime secq256k1

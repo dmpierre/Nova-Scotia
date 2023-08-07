@@ -9,6 +9,7 @@
 
 #include "fr.hpp"
 
+typedef unsigned int uint;
 typedef unsigned long long u64;
 typedef uint32_t u32;
 typedef uint8_t u8;

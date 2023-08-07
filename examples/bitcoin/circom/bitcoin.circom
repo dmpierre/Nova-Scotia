@@ -164,7 +164,6 @@ template CheckOneBlock() {
             }
         }
     }
-    // log("computeFlippedBlockHash", computeFlippedBlockHash.out);
     
     component blockHashMatchTarget = LessThan(252);
     blockHashMatchTarget.in[0] <== computeFlippedBlockHash.out;
@@ -198,5 +197,3 @@ template Main(BLOCK_COUNT) {
     }
     for (var j = 0;j < 2;j++) lastBlockHash[j] <== blockHashes[BLOCK_COUNT - 1][j];
 }
-
-component main { public [step_in] } = Main(1);
