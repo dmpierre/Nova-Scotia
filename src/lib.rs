@@ -96,7 +96,7 @@ pub fn create_recursive_circuit(
             FileLocation::PathBuf(path) => path.extension().unwrap_or_default() == "wasm",
             FileLocation::URL(_) => true,
         };
-
+        
         let witness = if is_wasm {
             generate_witness_from_wasm::<<G1 as Group>::Scalar>(
                 &witness_generator_file,

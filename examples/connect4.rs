@@ -1,7 +1,12 @@
 use std::{collections::HashMap, env::current_dir, time::Instant};
 
 use ff::PrimeField;
-use nova_scotia::{circom::reader::load_r1cs, FileLocation, F1, create_public_params, create_recursive_circuit};
+use nova_scotia::{
+    circom::reader::load_r1cs, create_public_params, create_recursive_circuit, FileLocation, F1,
+    G2
+};
+use nova_snark::traits::Group;
+
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -48,40 +53,97 @@ fn main() {
     let start_public_input = vec![F1::from_str_vartime(&game.step_in[0]).unwrap()];
     let mut private_inputs = Vec::new();
 
-    let mut private_input = HashMap::new();
+    for i in 0..4 {
+        let mut private_input = HashMap::new();
+        // we start at one since the first was included in the public input
+        private_input.insert("board".to_string(), json!(game.board[i]));
+        private_input.insert("dense_weights".to_string(), json!(game.dense_weights[i]));
+        private_input.insert("dense_bias".to_string(), json!(game.dense_bias[i]));
+        private_input.insert(
+            "dense_1_weights".to_string(),
+            json!(game.dense_1_weights[i]),
+        );
+        private_input.insert("dense_1_bias".to_string(), json!(game.dense_1_bias[i]));
+        private_input.insert(
+            "dense_2_weights".to_string(),
+            json!(game.dense_2_weights[i]),
+        );
+        private_input.insert("dense_2_bias".to_string(), json!(game.dense_2_bias[i]));
+        private_input.insert(
+            "dense_3_weights".to_string(),
+            json!(game.dense_3_weights[i]),
+        );
+        private_input.insert("dense_3_bias".to_string(), json!(game.dense_3_bias[i]));
+        private_input.insert(
+            "dense_4_weights".to_string(),
+            json!(game.dense_4_weights[i]),
+        );
+        private_input.insert("dense_4_bias".to_string(), json!(game.dense_4_bias[i]));
+        private_input.insert("turn".to_string(), json!(game.turn[i]));
+        private_input.insert(
+            "pathElementsCurrentLeafPlayer".to_string(),
+            json!(game.pathElementsCurrentLeafPlayer[i]),
+        );
+        private_input.insert(
+            "pathIndicesCurrentLeafPlayer".to_string(),
+            json!(game.pathIndicesCurrentLeafPlayer[i]),
+        );
+        private_input.insert(
+            "belowLeafPlayer".to_string(),
+            json!(game.belowLeafPlayer[i]),
+        );
+        private_input.insert(
+            "pathElementsBelowLeafPlayer".to_string(),
+            json!(game.pathElementsBelowLeafPlayer[i]),
+        );
+        private_input.insert(
+            "pathIndicesBelowLeafPlayer".to_string(),
+            json!(game.pathIndicesBelowLeafPlayer[i]),
+        );
+        private_input.insert(
+            "updatedRootFromPlayerPlay".to_string(),
+            json!(game.updatedRootFromPlayerPlay[i]),
+        );
+        private_input.insert(
+            "pathElementsUpdatedRootFromPlayer".to_string(),
+            json!(game.pathElementsUpdatedRootFromPlayer[i]),
+        );
+        private_input.insert(
+            "agentMoveRowHelper".to_string(),
+            json!(game.agentMoveRowHelper[i]),
+        );
+        private_input.insert(
+            "playerPlayedIndex".to_string(),
+            json!(game.playerPlayedIndex[i]),
+        );
+        private_input.insert(
+            "pathElementsCurrentLeafAgent".to_string(),
+            json!(game.pathElementsCurrentLeafAgent[i]),
+        );
+        private_input.insert(
+            "pathIndicesCurrentLeafAgent".to_string(),
+            json!(game.pathIndicesCurrentLeafAgent[i]),
+        );
+        private_input.insert("belowLeafAgent".to_string(), json!(game.belowLeafAgent[i]));
+        private_input.insert(
+            "pathElementsBelowLeafAgent".to_string(),
+            json!(game.pathElementsBelowLeafAgent[i]),
+        );
+        private_input.insert(
+            "pathIndicesBelowLeafAgent".to_string(),
+            json!(game.pathIndicesBelowLeafAgent[i]),
+        );
+        private_input.insert(
+            "updatedRootFromAgentPlay".to_string(),
+            json!(game.updatedRootFromAgentPlay[i]),
+        );
+        private_input.insert(
+            "pathElementsUpdatedRootFromAgent".to_string(),
+            json!(game.pathElementsUpdatedRootFromAgent[i]),
+        );
 
-    // we start at one since the first was included in the public input
-    private_input.insert("step_in".to_string(), json!(game.step_in[1..3])); 
-    private_input.insert("board".to_string(), json!(game.board[0..4]));
-    private_input.insert("dense_weights".to_string(), json!(game.dense_weights[0..4]));
-    private_input.insert("dense_bias".to_string(), json!(game.dense_bias[0..4]));
-    private_input.insert("dense_1_weights".to_string(), json!(game.dense_1_weights[0..4]));
-    private_input.insert("dense_1_bias".to_string(), json!(game.dense_1_bias[0..4]));
-    private_input.insert("dense_2_weights".to_string(), json!(game.dense_2_weights[0..4]));
-    private_input.insert("dense_2_bias".to_string(), json!(game.dense_2_bias[0..4]));
-    private_input.insert("dense_3_weights".to_string(), json!(game.dense_3_weights[0..4]));
-    private_input.insert("dense_3_bias".to_string(), json!(game.dense_3_bias[0..4]));
-    private_input.insert("dense_4_weights".to_string(), json!(game.dense_4_weights[0..4]));
-    private_input.insert("dense_4_bias".to_string(), json!(game.dense_4_bias[0..4]));
-    private_input.insert("turn".to_string(), json!(game.turn[0..4]));
-    private_input.insert("pathElementsCurrentLeafPlayer".to_string(), json!(game.pathElementsCurrentLeafPlayer[0..4]));
-    private_input.insert("pathIndicesCurrentLeafPlayer".to_string(), json!(game.pathIndicesCurrentLeafPlayer[0..4]));
-    private_input.insert("belowLeafPlayer".to_string(), json!(game.belowLeafPlayer[0..4]));
-    private_input.insert("pathElementsBelowLeafPlayer".to_string(), json!(game.pathElementsBelowLeafPlayer[0..4]));
-    private_input.insert("pathIndicesBelowLeafPlayer".to_string(), json!(game.pathIndicesBelowLeafPlayer[0..4]));
-    private_input.insert("updatedRootFromPlayerPlay".to_string(), json!(game.updatedRootFromPlayerPlay[0..4]));
-    private_input.insert("pathElementsUpdatedRootFromPlayer".to_string(), json!(game.pathElementsUpdatedRootFromPlayer[0..4]));
-    private_input.insert("agentMoveRowHelper".to_string(), json!(game.agentMoveRowHelper[0..4]));
-    private_input.insert("playerPlayedIndex".to_string(), json!(game.playerPlayedIndex[0..4]));
-    private_input.insert("pathElementsCurrentLeafAgent".to_string(), json!(game.pathElementsCurrentLeafAgent[0..4]));
-    private_input.insert("pathIndicesCurrentLeafAgent".to_string(), json!(game.pathIndicesCurrentLeafAgent[0..4]));
-    private_input.insert("belowLeafAgent".to_string(), json!(game.belowLeafAgent[0..4]));
-    private_input.insert("pathElementsBelowLeafAgent".to_string(), json!(game.pathElementsBelowLeafAgent[0..4]));
-    private_input.insert("pathIndicesBelowLeafAgent".to_string(), json!(game.pathIndicesBelowLeafAgent[0..4]));
-    private_input.insert("updatedRootFromAgentPlay".to_string(), json!(game.updatedRootFromAgentPlay[0..4]));
-    private_input.insert("pathElementsUpdatedRootFromAgent".to_string(), json!(game.pathElementsUpdatedRootFromAgent[0..4]));
-
-    private_inputs.push(private_input);
+        private_inputs.push(private_input);
+    }
 
     let pp = create_public_params(r1cs.clone());
 
@@ -93,7 +155,6 @@ fn main() {
         "Number of constraints per step (secondary circuit): {}",
         pp.num_constraints().1
     );
-
     println!(
         "Number of variables per step (primary circuit): {}",
         pp.num_variables().0
@@ -102,6 +163,7 @@ fn main() {
         "Number of variables per step (secondary circuit): {}",
         pp.num_variables().1
     );
+    
     let start = Instant::now();
     let recursive_snark = create_recursive_circuit(
         FileLocation::PathBuf(witness_generator_file),
@@ -111,4 +173,22 @@ fn main() {
         &pp,
     )
     .unwrap();
+    println!("RecursiveSNARK creation took {:?}", start.elapsed());
+    let z0_secondary = vec![<G2 as Group>::Scalar::zero()];
+
+    // verify the recursive SNARK
+    println!("Verifying a RecursiveSNARK...");
+    let start = Instant::now();
+    let res = recursive_snark.verify(
+        &pp,
+        4,
+        start_public_input.clone(),
+        z0_secondary.clone(),
+    );
+    println!(
+        "RecursiveSNARK::verify: {:?}, took {:?}",
+        res,
+        start.elapsed()
+    );
+    assert!(res.is_ok());
 }
