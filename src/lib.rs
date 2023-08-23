@@ -19,6 +19,9 @@ use crate::circom::reader::generate_witness_from_wasm;
 #[cfg(target_family = "wasm")]
 use crate::circom::wasm::generate_witness_from_wasm;
 
+#[cfg(target_family = "wasm")]
+use std::path::Path;
+
 pub mod circom;
 pub mod utils;
 
