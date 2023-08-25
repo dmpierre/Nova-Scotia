@@ -46,7 +46,7 @@ pub fn init_panic_hook() {
     console_error_panic_hook::set_once();
 }
 
-const WEBSITE_ROOT: &str = "https://effulgent-liger-07e9d0.netlify.app/";
+const WEBSITE_ROOT: &str = "http://localhost:3000/";
 
 #[wasm_bindgen]
 pub async fn generate_params() -> String {
@@ -61,6 +61,8 @@ pub async fn generate_params() -> String {
 
 #[wasm_bindgen]
 pub async fn generate_proof(pp_str: String) -> String {
+    init_panic_hook();
+
     let iteration_count = 5;
 
     let r1cs = load_r1cs(&FileLocation::URL(

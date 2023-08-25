@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 nova-scotia = { path = "../" }
-nova-snark = { version = "0.21.0", default-features = false }
+nova-snark = { git = "https://github.com/dmpierre/Nova.git", default-features = false, branch = "dev-secpsecq-031738d" }
 num-bigint = { version = "0.4", features = ["serde", "rand"] }
 num-traits = "0.2.15"
 serde = "1.0"
